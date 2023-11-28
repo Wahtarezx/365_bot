@@ -7,14 +7,18 @@ class CRUDRepository:
     def get(self, obj_id, *args, **kwargs):
         with self.session as session:
             result = session.query(self.model).get(obj_id)
-            return result
+            if result is not None:
+                return result
+            return session.query(self.model).filter(**kwargs).first
 
     def list(self, *args, **kwargs):
-        ...
+        with self.session as session:
+            result = session.query(self.model).filter(**kwargs).all()
+            return result
 
     def update(self, *args, **kwargs):
         with self.session as session:
-            self.session.update(self.model).values(**kwargs)
+            session.update(self.model).values(**kwargs)
 
     def create(self, *args, **kwargs):
         with self.session as session:
